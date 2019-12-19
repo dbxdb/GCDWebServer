@@ -100,6 +100,13 @@ extern NSString* const GCDWebServerOption_BonjourName;
 extern NSString* const GCDWebServerOption_BonjourType;
 
 /**
+ * The Bonjour service TXT record used by the GCDWebServer (NSData).
+ *
+ * The default value is nil.
+*/
+extern NSString* const GCDWebServerOption_BonjourTXT;
+
+/**
  *  Request a port mapping in the NAT gateway (NSNumber / BOOL).
  *
  *  This uses the DNSService API under the hood which supports IPv4 mappings only.

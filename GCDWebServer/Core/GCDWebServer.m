@@ -53,6 +53,7 @@
 NSString* const GCDWebServerOption_Port = @"Port";
 NSString* const GCDWebServerOption_BonjourName = @"BonjourName";
 NSString* const GCDWebServerOption_BonjourType = @"BonjourType";
+NSString* const GCDWebServerOption_BonjourTXT = @"BonjourTXT";
 NSString* const GCDWebServerOption_RequestNATPortMapping = @"RequestNATPortMapping";
 NSString* const GCDWebServerOption_BindToLocalhost = @"BindToLocalhost";
 NSString* const GCDWebServerOption_MaxPendingConnections = @"MaxPendingConnections";
@@ -582,12 +583,16 @@ static inline NSString* _EncodeBase64(NSString* string) {
 
   NSString* bonjourName = _GetOption(_options, GCDWebServerOption_BonjourName, nil);
   NSString* bonjourType = _GetOption(_options, GCDWebServerOption_BonjourType, @"_http._tcp");
+  NSData* bonjourTXT = _GetOption(_options, GCDWebServerOption_BonjourTXT, nil);
   if (bonjourName) {
     _registrationService = CFNetServiceCreate(kCFAllocatorDefault, CFSTR("local."), (__bridge CFStringRef)bonjourType, (__bridge CFStringRef)(bonjourName.length ? bonjourName : _serverName), (SInt32)_port);
     if (_registrationService) {
       CFNetServiceClientContext context = {0, (__bridge void*)self, NULL, NULL, NULL};
 
       CFNetServiceSetClient(_registrationService, _NetServiceRegisterCallBack, &context);
+      if (bonjourTXT) {
+        CFNetServiceSetTXTData(_registrationService, (__bridge CFDataRef)bonjourTXT);
+      }
       CFNetServiceScheduleWithRunLoop(_registrationService, CFRunLoopGetMain(), kCFRunLoopCommonModes);
       CFStreamError streamError = {0};
       CFNetServiceRegisterWithOptions(_registrationService, 0, &streamError);
